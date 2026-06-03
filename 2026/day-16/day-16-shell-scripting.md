@@ -5,7 +5,7 @@ Task 1: Your First Script
 Create a file hello.sh
 Add the shebang line #!/bin/bash at the top
 Print Hello, DevOps! using echo
-Make it executable and run it
+Make it executable and run it 
 
 
 chmod +x hello.sh
