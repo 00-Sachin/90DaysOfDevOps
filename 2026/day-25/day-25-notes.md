@@ -6,3 +6,6 @@
 
 ### Re-commit, then use git reset --hard to go back one commit — what happens this time?
 > This one is amazing; it not only undoes the commits but also deletes the commit from the record; the commit will not be in staging nor untracked; it is removed permanently. NOTE: it will also not undo the actual changes
+
+### Revert commit Y (the middle one) — what happens?
+> It will do the OSM thing it undo your changes that you created, but it did not undo the commit that you made 
