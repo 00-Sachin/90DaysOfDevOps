@@ -1,0 +1,18 @@
+---
+- name: Start multiple stopped EC2 instances
+  hosts: localhost
+  gather_facts: false
+  vars:
+    region: us-west-1
+    # Replace these with your actual 3 instance IDs
+    instance_ids:
+      - i-0a5eee1677384d5e0
+      - i-083cc9f6982dfa6ea
+      - i-086ab9c4fc66dd50e
+  tasks:
+    - name: Ensure all three instances are running
+      amazon.aws.ec2_instance:
+        region: "{{ region }}"
+        instance_ids: "{{ instance_ids }}"
+        state: running # change this whenever need
+        wait: true
