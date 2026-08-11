@@ -1,0 +1,31 @@
+---
+- name: Configure web servers
+  hosts: web
+  become: true
+  roles:
+    - role: webserver
+      vars:
+        app_name: terraweek
+        http_port: 80
+
+- name: Configure app servers with Docker
+  hosts: app
+  become: true
+  vars:
+    docker_packages:
+      - docker
+    docker_install_compose_plugin: false
+  roles:
+    - geerlingguy.docker
+
+
+- name: Configure database servers
+  hosts: db
+  become: true
+  tasks:
+    - name: Create DB config with secrets
+      template:
+        src: roles/webserver/templates/db-config.j2
+        dest: /etc/db-config.env
+        owner: root
+        mode: '0600'

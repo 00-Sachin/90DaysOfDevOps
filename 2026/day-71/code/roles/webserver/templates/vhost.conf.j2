@@ -1,0 +1,31 @@
+# Managed by Ansible -- do not edit manually
+
+server {
+    # Uses the http_port variable (80), but failsafes to 80 if missing
+    listen {{ http_port | default(80) }};
+    listen [::]:{{ http_port | default(80) }};
+    
+    # Automatically uses the server's actual hostname
+    server_name {{ ansible_hostname }};
+
+    # Points to /var/www/myapp based on your app_name variable
+    root /var/www/{{ app_name }};
+    index index.html index.html;
+
+    # Dynamic log files specifically for this app
+    access_log /var/log/nginx/{{ app_name }}_access.log main;
+    error_log /var/log/nginx/{{ app_name }}_error.log warn;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # Custom error pages
+    error_page 404 /404.html;
+    location = /40x.html {
+    }
+
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+    }
+}
