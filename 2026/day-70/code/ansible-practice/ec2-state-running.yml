@@ -14,5 +14,5 @@
       amazon.aws.ec2_instance:
         region: "{{ region }}"
         instance_ids: "{{ instance_ids }}"
-        state: running # change this whenever need
+        state: stopped # change this whenever need
         wait: true
