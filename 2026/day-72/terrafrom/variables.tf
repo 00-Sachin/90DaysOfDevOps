@@ -6,7 +6,7 @@ default = "us-west-1"
 
 variable "ami" {
 type =   string
-default = "ami-0fb110df4c5094d21 (64-bit (x86)) / ami-05ec7cd51fae886fa (64-bit (Arm))"
+default = "ami-0fb110df4c5094d21"
 }
 
 variable "key_name" {

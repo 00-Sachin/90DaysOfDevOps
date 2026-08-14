@@ -12,6 +12,13 @@ resource "aws_instance" "server" {
   }
 }
 
+resource "aws_ec2_instance_state" "server" {
+  for_each = aws_instance.server
+
+  instance_id = each.value.id
+  state       = "running"
+}
+
 
 resource "aws_security_group" "web_sg" {
   name        = "Ansible-capstone-SG"

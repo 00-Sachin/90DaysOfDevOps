@@ -1,0 +1,113 @@
+---
+- name: Install Docker dependencies
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - acl # added to relove the issue of underprevillaged root user UBUNTU  and DEPLOY
+    state: present
+    update_cache: true
+  tags:
+    - docker
+
+- name: Create Docker keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+  tags:
+    - docker
+
+
+- name: Download Docker GPG key
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: '0644'
+  tags:
+    - docker
+
+- name: Add Docker CE repository
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc]
+      https://download.docker.com/linux/ubuntu
+      {{ ansible_distribution_release }} stable
+    state: present
+    filename: docker
+
+- name: Install Docker CE
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+    update_cache: true
+
+- name: Start and enable Docker service
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+    enabled: true
+  tags:
+    - docker
+
+- name: Add deploy user to docker group
+  ansible.builtin.user:
+    name: deploy
+    groups: docker
+    append: true
+  tags:
+    - docker
+
+- name: Install Docker Compose
+  ansible.builtin.apt:
+    name:
+      - docker-compose-plugin
+    state: present
+  tags:
+    - docker
+
+- name: Log in to Docker Hub
+  community.docker.docker_login:
+    username: "{{ vault_docker_username }}"
+    password: "{{ vault_docker_password }}"
+  become: true
+  become_user: deploy
+  when: vault_docker_username is defined
+  tags:
+    - docker
+
+- name: Pull application image
+  community.docker.docker_image:
+    name: "{{ docker_app_image }}"
+    tag: "{{ docker_app_tag }}"
+    source: pull
+  tags:
+    - docker
+
+- name: Run application container
+  community.docker.docker_container:
+    name: "{{ docker_app_name }}"
+    image: "{{ docker_app_image }}:{{ docker_app_tag }}"
+    state: started
+    restart_policy: always
+    ports:
+      - "{{ docker_app_port }}:{{ docker_container_port }}"
+  tags:
+    - docker
+
+- name: Wait for container to be healthy
+  uri:
+    url: "http://localhost:{{ docker_app_port }}"
+    status_code: 200
+  retries: 5
+  delay: 3
+  register: health_check
+  until: health_check.status == 200
+    
+  tags:
+    - docker
