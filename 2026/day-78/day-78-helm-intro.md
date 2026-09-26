@@ -73,18 +73,6 @@ metrics:
 - `metrics.enabled` + `metrics.image.repository` — turns on the `mysqld-exporter` sidecar for Prometheus-style metrics, again pointed at the legacy image repo.
 - `metrics.serviceMonitor.enabled` — left off since I don't have the Prometheus Operator CRDs installed in this cluster; would flip to `true` if I did.
 
-## Screenshots
-
-`helm list` — showing deployed releases:
-
-`![helm list output](./screenshots/helm-list.png)`
-
-`helm history` — showing the upgrade (metrics enabled) and the rollback revision:
-
-`![helm history output](./screenshots/helm-history.png)`
-
-*(Drop the actual PNGs in a `screenshots/` folder next to this file and the paths above will render.)*
-
 ## Chart Directory Structure (`bitnami/mysql`, unpacked via `helm pull --untar`)
 
 ```
